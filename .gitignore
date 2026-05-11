@@ -1,0 +1,13 @@
+config.php
+*.env
+comprobantes/
+__pycache__/
+*.pyc
+*.tmp
+debug.php
+generar_hash*.php
+info.php
+.DS_Store
+Thumbs.db
+.vscode/
+*.swp
