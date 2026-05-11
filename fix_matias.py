@@ -15,7 +15,11 @@ CARPETA_BASE = r"C:\Users\Hernan\OneDrive\carpeta trabajo"
 DB_HOST      = "45.227.162.14"
 DB_PORT      = 3306
 DB_USER      = "claude_app"
+<<<<<<< HEAD
 DB_PASSWORD  = ""   # ← tu contraseña
+=======
+DB_PASSWORD  = "32hfF!LTc"   # ← tu contraseña
+>>>>>>> 400cee7bf2efdb6a38e96c0f6c20c184808ca007
 DB_NAME      = "app_movistar"
 
 def conectar():
