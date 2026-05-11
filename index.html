@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cobros Movistar · Sitiospyme</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --blue:        #1a4d8f;
+    --blue-mid:    #2260b0;
+    --blue-light:  #e8f0fa;
+    --blue-bdr:    #c2d5f0;
+    --orange:      #d4620a;
+    --orange-light:#fef3ea;
+    --orange-bdr:  #f5cba7;
+    --bg:          #f4f6f9;
+    --card:        #ffffff;
+    --border:      #e2e8f0;
+    --text:        #18222e;
+    --muted:       #6b7a8d;
+    --ok:          #1a6b3c;
+    --ok-bg:       #eaf5ef;
+    --ok-bdr:      #a8d8bc;
+    --mono:        'DM Mono', monospace;
+    --sans:        'DM Sans', sans-serif;
+    --radius:      10px;
+    --shadow:      0 1px 4px rgba(26,77,143,0.08);
+  }
+  body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* ── LOGIN ── */
+  #login-screen {
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, #1a4d8f 0%, #0f2d57 100%);
+    padding: 24px;
+  }
+  .login-card {
+    background: white; border-radius: 14px;
+    padding: 40px 36px; width: 100%; max-width: 360px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+  }
+  .login-logo {
+    text-align: center; margin-bottom: 28px;
+  }
+  .login-logo .icon {
+    font-size: 36px; display: block; margin-bottom: 10px;
+  }
+  .login-logo h1 {
+    font-size: 18px; font-weight: 600; color: var(--blue);
+  }
+  .login-logo p {
+    font-size: 12px; color: var(--muted); font-family: var(--mono); margin-top: 3px;
+  }
+  .field { margin-bottom: 16px; }
+  .field label {
+    display: block; font-size: 12px; font-weight: 500;
+    color: var(--muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.4px;
+  }
+  .field input {
+    width: 100%; padding: 10px 14px; border-radius: 8px;
+    border: 1.5px solid var(--border); font-size: 14px;
+    font-family: var(--sans); color: var(--text);
+    transition: border-color 0.15s;
+  }
+  .field input:focus { outline: none; border-color: var(--blue-mid); }
+  .btn-login {
+    width: 100%; padding: 12px; border-radius: 8px;
+    background: var(--blue); color: white; font-size: 14px;
+    font-weight: 600; font-family: var(--sans); border: none;
+    cursor: pointer; transition: background 0.15s; margin-top: 4px;
+  }
+  .btn-login:hover { background: var(--blue-mid); }
+  .btn-login:disabled { opacity: 0.6; cursor: not-allowed; }
+  .login-error {
+    margin-top: 12px; padding: 9px 14px; border-radius: 7px;
+    background: #fef0f0; border: 1px solid #f5c0c0;
+    font-size: 13px; color: #c0392b; display: none;
+  }
+
+  /* ── APP LAYOUT ── */
+  #app-screen { display: none; flex-direction: column; min-height: 100vh; }
+
+  /* HEADER */
+  .header {
+    background: var(--blue); color: white;
+    padding: 16px 24px;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 10px rgba(26,77,143,0.3);
+  }
+  .header-brand { display: flex; align-items: center; gap: 11px; }
+  .brand-icon {
+    width: 34px; height: 34px; border-radius: 8px;
+    background: rgba(255,255,255,0.15);
+    display: flex; align-items: center; justify-content: center; font-size: 16px;
+  }
+  .brand-title { font-size: 15px; font-weight: 600; }
+  .brand-sub { font-size: 11px; opacity: 0.6; font-family: var(--mono); }
+  .header-right { display: flex; align-items: center; gap: 10px; }
+  .user-name { font-size: 12px; opacity: 0.8; font-family: var(--mono); }
+  .btn-logout {
+    background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25);
+    color: white; padding: 5px 12px; border-radius: 6px; font-size: 12px;
+    cursor: pointer; font-family: var(--sans); transition: background 0.15s;
+  }
+  .btn-logout:hover { background: rgba(255,255,255,0.25); }
+
+  /* MES NAV */
+  .month-bar {
+    background: var(--card); border-bottom: 1px solid var(--border);
+    padding: 12px 24px;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  }
+  .month-nav { display: flex; align-items: center; gap: 6px; }
+  .nav-btn {
+    background: var(--bg); border: 1px solid var(--border);
+    color: var(--text); padding: 6px 12px; border-radius: 6px;
+    font-size: 15px; cursor: pointer; transition: all 0.12s;
+  }
+  .nav-btn:hover:not(:disabled) { background: var(--blue-light); border-color: var(--blue-bdr); }
+  .nav-btn:disabled { opacity: 0.3; cursor: default; }
+  .month-label { font-size: 15px; font-weight: 600; min-width: 120px; text-align: center; }
+  .periodo-badge {
+    font-size: 11px; font-family: var(--mono); color: var(--muted);
+    background: var(--bg); border: 1px solid var(--border);
+    padding: 3px 10px; border-radius: 20px;
+  }
+
+  /* SUMMARY */
+  .summary {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    background: var(--card); border-bottom: 1px solid var(--border);
+    box-shadow: var(--shadow);
+  }
+  .s-cell {
+    padding: 14px 20px; border-right: 1px solid var(--border);
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .s-cell:last-child { border-right: none; }
+  .s-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--muted); }
+  .s-val { font-size: 18px; font-weight: 600; font-family: var(--mono); }
+  .s-val.blue   { color: var(--blue); }
+  .s-val.orange { color: var(--orange); }
+  .s-val.green  { color: var(--ok); }
+
+  /* CONTENT */
+  .content { padding: 16px; max-width: 720px; margin: 0 auto; width: 100%; }
+
+  .venc-bar {
+    background: var(--orange-light); border: 1px solid var(--orange-bdr);
+    border-radius: 8px; padding: 9px 14px; font-size: 12px; color: var(--orange);
+    margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+  }
+
+  /* COBRO CARD */
+  .cobro-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); box-shadow: var(--shadow);
+    overflow: hidden; margin-bottom: 10px; transition: all 0.15s;
+  }
+  .cobro-card:hover { box-shadow: 0 3px 12px rgba(26,77,143,0.1); }
+  .cobro-card.cobrado { border-color: var(--ok-bdr); background: var(--ok-bg); }
+
+  .card-top {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 16px; gap: 12px;
+  }
+  .persona-row { display: flex; align-items: center; gap: 11px; }
+  .avatar {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: var(--blue-light); color: var(--blue-mid);
+    font-size: 13px; font-weight: 600; font-family: var(--mono);
+    display: flex; align-items: center; justify-content: center;
+    border: 1.5px solid var(--blue-bdr); flex-shrink: 0;
+  }
+  .cobro-card.cobrado .avatar { background: var(--ok-bg); color: var(--ok); border-color: var(--ok-bdr); }
+  .p-name { font-size: 15px; font-weight: 600; }
+  .p-sub  { font-size: 11px; color: var(--muted); font-family: var(--mono); margin-top: 2px; }
+
+  .monto-block { text-align: right; }
+  .monto-num { font-size: 17px; font-weight: 600; font-family: var(--mono); }
+  .monto-sub { font-size: 11px; color: var(--muted); font-family: var(--mono); margin-top: 2px; }
+  .iva-pill {
+    font-size: 10px; font-family: var(--mono); padding: 2px 6px;
+    border-radius: 4px; margin-left: 5px; vertical-align: middle;
+  }
+  .iva-si { background: var(--orange-light); color: var(--orange); border: 1px solid var(--orange-bdr); }
+  .iva-no { background: var(--blue-light);   color: var(--blue-mid); border: 1px solid var(--blue-bdr); }
+
+  .card-chips {
+    border-top: 1px solid var(--border); padding: 8px 16px;
+    display: flex; flex-wrap: wrap; gap: 6px;
+  }
+  .cobro-card.cobrado .card-chips { border-color: var(--ok-bdr); }
+  .chip {
+    font-size: 11px; font-family: var(--mono); background: var(--bg);
+    border: 1px solid var(--border); padding: 3px 10px; border-radius: 20px; color: var(--muted);
+  }
+  .chip b { color: var(--text); font-weight: 500; }
+
+  .card-footer {
+    border-top: 1px solid var(--border); padding: 11px 16px;
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    flex-wrap: wrap;
+  }
+  .cobro-card.cobrado .card-footer { border-color: var(--ok-bdr); }
+
+  .estado-tag {
+    font-size: 12px; font-family: var(--mono);
+    padding: 4px 10px; border-radius: 20px;
+  }
+  .estado-pendiente { color: var(--muted); }
+  .estado-cobrado   { color: var(--ok); background: white; border: 1px solid var(--ok-bdr); }
+
+  /* BOTÓN COBRAR */
+  .btn-cobrar {
+    padding: 9px 18px; border-radius: 7px; font-size: 13px;
+    font-weight: 600; font-family: var(--sans); cursor: pointer;
+    border: none; transition: all 0.15s; min-width: 150px; text-align: center;
+  }
+  .btn-cobrar.pendiente { background: var(--blue); color: white; }
+  .btn-cobrar.pendiente:hover { background: #153e75; }
+  .btn-cobrar.hecho { background: white; color: var(--orange); border: 1.5px solid var(--orange-bdr); }
+  .btn-cobrar.hecho:hover { background: var(--orange-light); }
+  .btn-cobrar:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 200; padding: 20px;
+  }
+  .modal {
+    background: white; border-radius: 12px; padding: 28px;
+    width: 100%; max-width: 380px; box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  }
+  .modal h3 { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+  .modal p  { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+  .modal-field { margin-bottom: 14px; }
+  .modal-field label { display: block; font-size: 12px; font-weight: 500; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.4px; }
+  .modal-field select,
+  .modal-field textarea {
+    width: 100%; padding: 9px 12px; border-radius: 7px;
+    border: 1.5px solid var(--border); font-size: 14px;
+    font-family: var(--sans); color: var(--text);
+  }
+  .modal-field select:focus,
+  .modal-field textarea:focus { outline: none; border-color: var(--blue-mid); }
+  .modal-field textarea { resize: vertical; min-height: 70px; }
+  .modal-btns { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+  .btn-cancel { padding: 9px 18px; border-radius: 7px; background: var(--bg); border: 1px solid var(--border); font-size: 13px; font-weight: 500; cursor: pointer; }
+  .btn-confirm { padding: 9px 18px; border-radius: 7px; background: var(--blue); color: white; border: none; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .btn-confirm:hover { background: #153e75; }
+
+  /* LOADING */
+  .loading {
+    text-align: center; padding: 48px; color: var(--muted); font-size: 14px;
+  }
+  .spinner {
+    width: 28px; height: 28px; border: 2px solid var(--border);
+    border-top-color: var(--blue); border-radius: 50%;
+    animation: spin 0.8s linear infinite; margin: 0 auto 12px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* TOAST */
+  #toast {
+    position: fixed; bottom: 24px; left: 50%;
+    transform: translateX(-50%) translateY(8px);
+    background: var(--text); color: white; padding: 10px 20px;
+    border-radius: 8px; font-size: 13px; font-family: var(--mono);
+    opacity: 0; transition: opacity 0.25s, transform 0.25s;
+    pointer-events: none; z-index: 999;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  .app-footer {
+    text-align: center; padding: 12px; font-size: 11px;
+    color: var(--muted); font-family: var(--mono);
+    border-top: 1px solid var(--border); background: var(--card);
+    margin-top: auto;
+  }
+
+  @media (max-width: 480px) {
+    .header { padding: 12px 16px; }
+    .month-bar { padding: 10px 16px; }
+    .s-val { font-size: 15px; }
+    .content { padding: 12px; }
+    .card-top { flex-wrap: wrap; }
+    .monto-block { text-align: left; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── LOGIN ───────────────────────────────────────────────── -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <span class="icon">📱</span>
+      <h1>Cobros Movistar</h1>
+      <p>Flota Rodríguez Hernán</p>
+    </div>
+    <div class="field">
+      <label>Usuario</label>
+      <input type="text" id="inp-user" placeholder="admin" autocomplete="username">
+    </div>
+    <div class="field">
+      <label>Contraseña</label>
+      <input type="password" id="inp-pass" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <button class="btn-login" id="btn-login">Ingresar</button>
+    <div class="login-error" id="login-error"></div>
+  </div>
+</div>
+
+<!-- ── APP ─────────────────────────────────────────────────── -->
+<div id="app-screen">
+
+  <header class="header">
+    <div class="header-brand">
+      <div class="brand-icon">📱</div>
+      <div>
+        <div class="brand-title">Cobros Movistar</div>
+        <div class="brand-sub">Flota Rodríguez Hernán · 91514949</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <span class="user-name" id="user-name"></span>
+      <button class="btn-logout" id="btn-logout">Salir</button>
+    </div>
+  </header>
+
+  <div class="month-bar">
+    <div class="month-nav">
+      <button class="nav-btn" id="prev-btn">‹</button>
+      <div class="month-label" id="month-label">—</div>
+      <button class="nav-btn" id="next-btn">›</button>
+    </div>
+    <span class="periodo-badge" id="periodo-badge">—</span>
+  </div>
+
+  <div class="summary">
+    <div class="s-cell">
+      <div class="s-label">Total factura</div>
+      <div class="s-val blue" id="sum-total">—</div>
+    </div>
+    <div class="s-cell">
+      <div class="s-label">A cobrar</div>
+      <div class="s-val orange" id="sum-cobrar">—</div>
+    </div>
+    <div class="s-cell">
+      <div class="s-label">Cobrado</div>
+      <div class="s-val green" id="sum-cobrado">—</div>
+    </div>
+  </div>
+
+  <div class="content" id="content">
+    <div class="loading"><div class="spinner"></div>Cargando...</div>
+  </div>
+
+  <footer class="app-footer">Sitiospyme · movistar.sitiospyme.com.ar</footer>
+</div>
+
+<!-- ── MODAL COBRO ─────────────────────────────────────────── -->
+<div class="modal-overlay" id="modal" style="display:none">
+  <div class="modal">
+    <h3 id="modal-title">Registrar cobro</h3>
+    <p id="modal-sub"></p>
+    <div class="modal-field">
+      <label>Forma de pago</label>
+      <select id="modal-forma">
+        <option value="transferencia">Transferencia</option>
+        <option value="efectivo">Efectivo</option>
+        <option value="otro">Otro</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <label>Notas (opcional)</label>
+      <textarea id="modal-notas" placeholder="Ej: transferencia recibida, número de comprobante..."></textarea>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" id="modal-cancel">Cancelar</button>
+      <button class="btn-confirm" id="modal-confirm">✓ Confirmar cobro</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ── CONFIG ────────────────────────────────────────────────────────────────────
+const API = './api.php';   // misma carpeta que el HTML
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let facturas    = [];   // lista de facturas del servidor
+let factura     = null; // factura actual con detalle
+let mesIdx      = 0;
+let pendingCobro = null; // { cobro_id, pagador, monto }
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+const fmt = n => '$\u202f' + Number(n).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const ini = s => s.substring(0, 2).toUpperCase();
+
+let toastT;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastT);
+  toastT = setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+async function api(path, opts = {}) {
+  const r = await fetch(API + path, {
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    ...opts,
+  });
+  return r.json();
+}
+
+// ── AUTH ──────────────────────────────────────────────────────────────────────
+document.getElementById('btn-login').addEventListener('click', doLogin);
+document.getElementById('inp-pass').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+async function doLogin() {
+  const btn  = document.getElementById('btn-login');
+  const err  = document.getElementById('login-error');
+  const user = document.getElementById('inp-user').value.trim();
+  const pass = document.getElementById('inp-pass').value;
+  if (!user || !pass) { showErr('Completá usuario y contraseña'); return; }
+
+  btn.disabled = true; btn.textContent = 'Ingresando...';
+  err.style.display = 'none';
+
+  const data = await api('/login', {
+    method: 'POST',
+    body: JSON.stringify({ username: user, password: pass }),
+  });
+
+  if (data.ok) {
+    document.getElementById('user-name').textContent = data.nombre;
+    showApp();
+    loadFacturas();
+  } else {
+    showErr(data.error || 'Error al ingresar');
+    btn.disabled = false; btn.textContent = 'Ingresar';
+  }
+}
+
+function showErr(msg) {
+  const el = document.getElementById('login-error');
+  el.textContent = msg; el.style.display = 'block';
+}
+
+document.getElementById('btn-logout').addEventListener('click', async () => {
+  await api('/logout', { method: 'POST' });
+  document.getElementById('app-screen').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('inp-pass').value = '';
+  facturas = []; factura = null;
+});
+
+function showApp() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app-screen').style.display = 'flex';
+  document.getElementById('app-screen').style.flexDirection = 'column';
+}
+
+// ── DATOS ─────────────────────────────────────────────────────────────────────
+async function loadFacturas() {
+  const data = await api('/facturas');
+  if (!data.ok) { toast('Error al cargar facturas'); return; }
+
+  facturas = data.facturas.reverse(); // cronológico asc
+  mesIdx   = facturas.length - 1;
+
+  document.getElementById('prev-btn').addEventListener('click', () => {
+    if (mesIdx > 0) { mesIdx--; loadDetalle(); }
+  });
+  document.getElementById('next-btn').addEventListener('click', () => {
+    if (mesIdx < facturas.length - 1) { mesIdx++; loadDetalle(); }
+  });
+
+  if (facturas.length) loadDetalle();
+  else document.getElementById('content').innerHTML = '<div class="loading">No hay facturas importadas aún.</div>';
+}
+
+async function loadDetalle() {
+  const f = facturas[mesIdx];
+  document.getElementById('prev-btn').disabled = mesIdx === 0;
+  document.getElementById('next-btn').disabled = mesIdx === facturas.length - 1;
+
+  const [mm, yy] = f.periodo.split('-');
+  const nombres = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  document.getElementById('month-label').textContent  = `${nombres[parseInt(mm)-1]} ${yy}`;
+  document.getElementById('periodo-badge').textContent = `Factura ${f.numero_factura ?? f.periodo}`;
+  document.getElementById('content').innerHTML = '<div class="loading"><div class="spinner"></div>Cargando detalle...</div>';
+
+  const data = await api(`/factura?periodo=${f.periodo}`);
+  if (!data.ok) { toast('Error al cargar detalle'); return; }
+  factura = data;
+  renderDetalle();
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────────────
+function renderDetalle() {
+  const { factura: f, detalle, cobros } = factura;
+
+  // Totales
+  let aCobrar = 0, cobrado = 0;
+  cobros.forEach(c => {
+    if (c.cobrado) cobrado += parseFloat(c.monto_total);
+    else           aCobrar += parseFloat(c.monto_total);
+  });
+  document.getElementById('sum-total').textContent   = fmt(f.total_factura);
+  document.getElementById('sum-cobrar').textContent  = fmt(aCobrar);
+  document.getElementById('sum-cobrado').textContent = fmt(cobrado);
+
+  // Alerta vencimiento
+  const [mm, yy] = f.periodo.split('-');
+  const venc = new Date(parseInt(yy), parseInt(mm), 16);
+  const diff = Math.ceil((venc - new Date()) / 86400000);
+  let alertaHtml = '';
+  if (diff >= 0 && diff <= 10)
+    alertaHtml = `<div class="venc-bar">⚠️ Vencimiento en <b>${diff} días</b> (16/${mm}/${yy})</div>`;
+  else if (diff < 0)
+    alertaHtml = `<div class="venc-bar">⚠️ Factura vencida el 16/${mm}/${yy}</div>`;
+
+  // Agrupar detalle por pagador
+  const porPagador = {};
+  detalle.forEach(d => {
+    if (!porPagador[d.pagador]) porPagador[d.pagador] = { lineas: [], cobra_iva: d.cobra_iva };
+    porPagador[d.pagador].lineas.push(d);
+  });
+
+  // Cards de cobros
+  let html = alertaHtml;
+  cobros.forEach(c => {
+    const esC    = !!c.cobrado;
+    const lineas = porPagador[c.pagador]?.lineas ?? [];
+    const ivaFlag = porPagador[c.pagador]?.cobra_iva ?? 0;
+
+    const chipsHtml = lineas.map(l =>
+      `<div class="chip"><b>${l.titular}</b> ${l.numero}</div>`
+    ).join('');
+
+    const estadoHtml = esC
+      ? `<span class="estado-tag estado-cobrado">✓ Cobrado el ${c.fecha_cobro} · ${c.forma_pago ?? ''}</span>`
+      : `<span class="estado-tag estado-pendiente">Pendiente de cobro</span>`;
+
+    const btnHtml = esC
+      ? `<button class="btn-cobrar hecho" onclick="desmarcarCobro(${c.id},'${c.pagador}')">↩ Desmarcar</button>`
+      : `<button class="btn-cobrar pendiente" onclick="abrirModal(${c.id},'${c.pagador}',${c.monto_total})">✓ Marcar cobrado</button>`;
+
+    html += `
+    <div class="cobro-card ${esC ? 'cobrado' : ''}">
+      <div class="card-top">
+        <div class="persona-row">
+          <div class="avatar">${ini(c.pagador)}</div>
+          <div>
+            <div class="p-name">${c.pagador}</div>
+            <div class="p-sub">${lineas.length} línea${lineas.length > 1 ? 's' : ''}</div>
+          </div>
+        </div>
+        <div class="monto-block">
+          <div class="monto-num">
+            ${fmt(c.monto_total)}
+            <span class="iva-pill ${ivaFlag ? 'iva-si' : 'iva-no'}">${ivaFlag ? 'c/IVA' : 's/IVA'}</span>
+          </div>
+          <div class="monto-sub">Neto ${fmt(c.monto_neto)}${ivaFlag ? ' · IVA ' + fmt(c.monto_iva) : ''}</div>
+        </div>
+      </div>
+      ${chipsHtml ? `<div class="card-chips">${chipsHtml}</div>` : ''}
+      <div class="card-footer">
+        ${estadoHtml}
+        ${btnHtml}
+      </div>
+    </div>`;
+  });
+
+  document.getElementById('content').innerHTML = html;
+}
+
+// ── COBROS ────────────────────────────────────────────────────────────────────
+function abrirModal(cobroId, pagador, monto) {
+  pendingCobro = { cobro_id: cobroId, pagador, monto };
+  document.getElementById('modal-title').textContent = `Cobro de ${pagador}`;
+  document.getElementById('modal-sub').textContent   = `Monto: ${fmt(monto)}`;
+  document.getElementById('modal-notas').value       = '';
+  document.getElementById('modal-forma').value       = 'transferencia';
+  document.getElementById('modal').style.display     = 'flex';
+}
+
+document.getElementById('modal-cancel').addEventListener('click', () => {
+  document.getElementById('modal').style.display = 'none';
+  pendingCobro = null;
+});
+
+document.getElementById('modal-confirm').addEventListener('click', async () => {
+  if (!pendingCobro) return;
+  const forma = document.getElementById('modal-forma').value;
+  const notas = document.getElementById('modal-notas').value;
+  document.getElementById('modal').style.display = 'none';
+
+  await guardarCobro(pendingCobro.cobro_id, true, forma, notas);
+  pendingCobro = null;
+});
+
+async function desmarcarCobro(cobroId) {
+  if (!confirm('¿Desmarcar este cobro?')) return;
+  await guardarCobro(cobroId, false, null, null);
+}
+
+async function guardarCobro(cobroId, cobrado, formaPago, notas) {
+  const data = await api('/cobro', {
+    method: 'POST',
+    body: JSON.stringify({ cobro_id: cobroId, cobrado, forma_pago: formaPago, notas }),
+  });
+
+  if (data.ok) {
+    // Actualizar en memoria
+    const idx = factura.cobros.findIndex(c => c.id === cobroId);
+    if (idx !== -1) factura.cobros[idx] = data.cobro;
+    renderDetalle();
+    toast(cobrado ? '✓ Cobro registrado' : '↩ Cobro desmarcado');
+  } else {
+    toast('Error: ' + (data.error ?? 'desconocido'));
+  }
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+// Verificar si ya hay sesión activa
+(async () => {
+  const data = await api('/me').catch(() => ({ ok: false }));
+  if (data.ok) {
+    document.getElementById('user-name').textContent = data.nombre;
+    showApp();
+    loadFacturas();
+  }
+})();
+</script>
+</body>
+</html>
